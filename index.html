@@ -105,11 +105,12 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- Layout helpers ---------- */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
-.section { padding-block: clamp(72px, 9vw, 140px); position: relative; }
-.section--tight { padding-block: clamp(54px, 6vw, 96px); }
+.section { padding-block: clamp(56px, 6.5vw, 104px); position: relative; }
+.section--tight { padding-block: clamp(44px, 5vw, 76px); }
 .band-paper2 { background: var(--paper-2); }
 .band-ink { background: var(--ink); color: var(--on-dark); }
 .band-ink h1, .band-ink h2, .band-ink h3, .band-ink h4 { color: #fff; }
+.band-ink .lead { color: var(--on-dark-soft); }
 
 /* ---------- Eyebrow / kicker ---------- */
 .kicker {
@@ -241,6 +242,11 @@ image-slot {
 
 /* ---------- Utility ---------- */
 .center { text-align: center; }
+/* Justified running copy for a cleaner, editorial look. Headings, buttons,
+   pills and centered blocks stay as they are. */
+p, .lead { text-align: justify; text-align-last: left; hyphens: auto; }
+.center, .center p, .sec-head--center .lead,
+.cta-band p, .cta-band .lead, .statsbar__item p { text-align: center; text-align-last: center; hyphens: manual; }
 .muted { color: var(--text-soft); }
 .stack-sm > * + * { margin-top: 12px; }
 .stack > * + * { margin-top: 20px; }
@@ -402,10 +408,10 @@ body { padding-top: var(--nav-h); }
 .intro__media { position: relative; }
 .intro__frame { aspect-ratio: 4/4.4; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); }
 .intro__quote {
-  position: absolute; right: -26px; bottom: -28px; max-width: 280px;
-  padding: 22px 24px; border-radius: 18px; background: var(--card); box-shadow: var(--shadow-lg);
+  position: absolute; right: -22px; bottom: -24px; max-width: 216px;
+  padding: 15px 17px; border-radius: 15px; background: var(--card); box-shadow: var(--shadow-lg);
 }
-.intro__quote p { font-family: var(--serif); font-size: 18px; line-height: 1.4; color: var(--ink); margin-top: 12px; }
+.intro__quote p { font-family: var(--serif); font-size: 14.5px; line-height: 1.36; color: var(--ink); margin-top: 7px; text-align: left; text-align-last: left; hyphens: manual; }
 .intro__pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
 /* On narrower screens the absolute quote card would cover the photo, so
    stack the section and let the card sit just below the image instead. */
@@ -466,6 +472,14 @@ body { padding-top: var(--nav-h); }
 .feat:hover .feat__ic { background: var(--accent); }
 .feat h3 { margin-bottom: 10px; }
 .feat p { font-size: 15px; color: var(--text-soft); line-height: 1.6; }
+/* Features on the dark band — matches the Silver Concierge feel */
+.features { position: relative; overflow: hidden; }
+.features__glow { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(60% 80% at 80% 10%, color-mix(in srgb, var(--accent) 30%, transparent) 0%, transparent 60%); }
+.features .wrap { position: relative; z-index: 1; }
+.band-ink .feat.card { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.10); box-shadow: none; }
+.band-ink .feat__ic { background: var(--accent); }
+.band-ink .feat p { color: var(--on-dark-soft); }
 @media (max-width: 920px) { .features__grid { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 560px) { .features__grid { grid-template-columns: 1fr; } }
 
@@ -610,11 +624,11 @@ body { padding-top: var(--nav-h); }
 .phone {
   position: absolute; left: 50%; top: 50%; width: 236px; aspect-ratio: 9 / 19.3;
   transform-origin: center center; cursor: pointer;
-  transition: transform .75s var(--ease-out), opacity .6s var(--ease), filter .6s var(--ease);
-  background: linear-gradient(160deg, #1a2c47, #0d1828);
-  padding: 9px; border-radius: 38px;
-  box-shadow: 0 30px 60px rgba(15,28,48,.32), inset 0 0 0 1.5px rgba(255,255,255,.08);
-  will-change: transform, opacity;
+  transition: transform .75s var(--ease-out), opacity .6s var(--ease), filter .6s var(--ease), box-shadow .6s var(--ease);
+  background: linear-gradient(155deg, #24384f 0%, #0e1b2c 52%, #070f1b 100%);
+  padding: 8px; border-radius: 40px;
+  box-shadow: 0 30px 60px rgba(15,28,48,.32), inset 0 0 0 1.5px rgba(255,255,255,.12), inset 0 0 0 3px rgba(0,0,0,.38);
+  will-change: transform, opacity, box-shadow;
 }
 .phone__notch { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); width: 64px; height: 7px; border-radius: 99px; background: rgba(255,255,255,.22); z-index: 5; }
 .phone__screen { position: relative; height: 100%; border-radius: 30px; overflow: hidden; background: #0e1a2c; }
@@ -2002,6 +2016,7 @@ const SLOT_IMAGES = {
   "svc-club":           "images/svc-club.jpg",
   "svc-express":        "images/svc-express.jpg",
   "svc-hotel":          "images/svc-hotel.jpg",
+  "svc-silver":         "images/soc7.jpg",
   "testi-0":            "images/testi-0.jpg",
   "testi-1":            "images/testi-1.jpg",
   "testi-2":            "images/testi-2.jpg",
@@ -2159,7 +2174,7 @@ const TEL = "tel:+593995496471";
 
 function WhatsBtn({ light, lg, label = "Hablemos por WhatsApp" }) {
   return (
-    <a className={`btn btn--accent ${lg ? "btn--lg" : ""}`} href={WA} target="_blank" rel="noopener">
+    <a className={`btn ${light ? "btn--light" : "btn--accent"} ${lg ? "btn--lg" : ""}`} href={WA} target="_blank" rel="noopener">
       <Ic name="whatsapp" size={18} /> {label}
     </a>
   );
@@ -2329,12 +2344,25 @@ Object.assign(window, { WhatsBtn, CallBtn, TrustLine, WA, TEL });
 const { useState: useStateN, useEffect: useEffectN } = React;
 
 const NAV_ITEMS = [
-  { id: "residencia", label: "Residencia Permanente", href: "#servicios" },
-  { id: "club",       label: "Club de Día",          href: "#servicios" },
-  { id: "express",    label: "Servicio Express",      href: "#servicios" },
-  { id: "hotel",      label: "Hotel de Paso",         href: "#servicios" },
-  { id: "silver",     label: "Silver Concierge",      href: "#silver" },
+  { id: "residencia", label: "Residencia Permanente", href: "#/servicio/residencia" },
+  { id: "club",       label: "Club de Día",          href: "#/servicio/club" },
+  { id: "express",    label: "Servicio Express",      href: "#/servicio/express" },
+  { id: "hotel",      label: "Hotel de Paso",         href: "#/servicio/hotel" },
+  { id: "silver",     label: "Silver Concierge",      href: "#/servicio/silver" },
 ];
+
+// Hash-route navigation that doesn't rely on the browser's default anchor
+// behavior (which, combined with scroll-behavior:smooth and non-matching
+// fragments, was unreliable). preventDefault + set the hash ourselves so the
+// detail page opens instantly from the top. Modifier/middle clicks fall
+// through so "open in new tab" still works.
+function goRoute(e, href) {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (e.button && e.button !== 0)) return;
+  e.preventDefault();
+  if (window.location.hash !== href) window.location.hash = href;
+  else window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+}
+window.goRoute = goRoute;
 
 function Nav() {
   const [scrolled, setScrolled] = useStateN(false);
@@ -2351,7 +2379,7 @@ function Nav() {
         <Logo />
         <nav className="nav__links" aria-label="Servicios">
           {NAV_ITEMS.map((it) => (
-            <a key={it.id} href={it.href} className="nav__link">{it.label}</a>
+            <a key={it.id} href={it.href} className="nav__link" onClick={(e) => goRoute(e, it.href)}>{it.label}</a>
           ))}
         </nav>
         <div className="nav__cta">
@@ -2363,7 +2391,7 @@ function Nav() {
       </div>
       <div className={`nav__mobile ${open ? "open" : ""}`}>
         {NAV_ITEMS.map((it) => (
-          <a key={it.id} href={it.href} className="nav__mobile-link" onClick={() => setOpen(false)}>{it.label}</a>
+          <a key={it.id} href={it.href} className="nav__mobile-link" onClick={(e) => { setOpen(false); goRoute(e, it.href); }}>{it.label}</a>
         ))}
         <a className="btn btn--accent" href={WA} target="_blank" rel="noopener" style={{ marginTop: 8 }}>
           <Ic name="whatsapp" size={17} /> Hablemos por WhatsApp
@@ -2420,7 +2448,7 @@ function Intro() {
             </div>
           </Reveal>
           <Reveal className="intro__quote card" delay={300}>
-            <Ic name="leaf" size={20} style={{ color: "var(--accent)" }} />
+            <Ic name="leaf" size={16} style={{ color: "var(--accent)" }} />
             <p>“Nuestros adultos mayores merecen seguir siendo <strong>protagonistas de su propia vida.</strong>”</p>
           </Reveal>
         </div>
@@ -2512,7 +2540,7 @@ function Services() {
                 <ul className="svc__points">
                   {s.points.map((p, j) => <li key={j}><Ic name="check" size={15} /> {p}</li>)}
                 </ul>
-                <a className="link-arrow" href={`#/servicio/${s.id}`}>Más información <Ic name="arrow" size={16} /></a>
+                <a className="link-arrow" href={`#/servicio/${s.id}`} onClick={(e) => window.goRoute(e, `#/servicio/${s.id}`)}>Más información <Ic name="arrow" size={16} /></a>
               </div>
             </Reveal>
           ))}
@@ -2591,6 +2619,22 @@ const SERVICE_DETAILS = {
     ],
     info: { title: "¿Cuándo conviene?", body: "Ideal para un viaje familiar, una emergencia en el hogar, o una estancia de recuperación corta con todos los servicios cubiertos.",
       list: ["Estadías por días o semanas", "Todos los servicios incluidos", "Reserva flexible"] },
+  },
+  silver: {
+    name: "Silver Concierge", tag: "Servicio premium · acompañamiento personalizado", slot: "svc-silver",
+    lead: "Un acompañamiento personalizado que se encarga de cada detalle, para que tu familia tenga total tranquilidad.",
+    intro: [
+      "Silver Concierge es nuestro servicio premium de acompañamiento personalizado: una persona dedicada que coordina citas médicas, terapias, traslados y trámites del día a día de tu adulto mayor.",
+      "Nos ocupamos de cada detalle y mantenemos a la familia siempre informada, para que tengas total tranquilidad sabiendo que tu ser querido está en las mejores manos.",
+    ],
+    incluye: [
+      { ic: "stethoscope", t: "Coordinación médica", d: "Agendamos citas, terapias y controles de salud." },
+      { ic: "briefcase", t: "Gestiones y trámites", d: "Traslados, compras y diligencias del día a día." },
+      { ic: "heart", t: "Acompañamiento personal", d: "Una persona dedicada a tu adulto mayor." },
+      { ic: "link", t: "Familia informada", d: "Reportes y comunicación constante contigo." },
+    ],
+    info: { title: "¿Para quién es?", body: "Ideal para familias que buscan una atención integral y personalizada, con una persona de confianza que gestione y coordine cada aspecto del cuidado de su adulto mayor.",
+      list: ["Acompañamiento personalizado y dedicado", "Coordinación médica y de trámites", "Familia siempre informada"] },
   },
 };
 
@@ -2675,8 +2719,9 @@ function SilverConcierge() {
           <Reveal as="p" className="lead" delay={160} style={{ color: "var(--on-dark-soft)", marginTop: 18, maxWidth: "52ch" }}>
             Un acompañamiento personalizado que se encarga de cada detalle: coordinamos citas médicas, terapias, traslados y trámites del día a día de tu adulto mayor, para que tu familia tenga total tranquilidad.
           </Reveal>
-          <Reveal delay={260} style={{ marginTop: 30 }}>
+          <Reveal delay={260} style={{ marginTop: 30, display: "flex", gap: 20, flexWrap: "wrap", alignItems: "center" }}>
             <WhatsBtn lg label="Conoce Silver Concierge" />
+            <a className="link-arrow" href="#/servicio/silver" onClick={(e) => window.goRoute(e, "#/servicio/silver")} style={{ color: "var(--accent-300)" }}>Más información <Ic name="arrow" size={16} /></a>
           </Reveal>
         </div>
         <div className="silver__cards">
@@ -2709,14 +2754,15 @@ const FEATURES = [
 
 function Features() {
   return (
-    <section className="section features" id="incluye">
+    <section className="section band-ink features" id="incluye">
+      <div className="features__glow" aria-hidden="true"></div>
       <div className="wrap">
         <div className="features__head">
           <SectionHead kicker="Todo incluido, desde el primer día"
             title={<>Todo lo que tu familiar necesita, sin preocupaciones</>}
             lead="Cada detalle está pensado para el confort, la salud y la felicidad de quien más quieres." max={620} />
           <Reveal delay={200} className="features__cta">
-            <WhatsBtn label="Agenda una visita" />
+            <WhatsBtn light label="Agenda una visita" />
           </Reveal>
         </div>
         <div className="features__grid">
@@ -3107,12 +3153,21 @@ function SocialCarousel() {
     const scale = abs === 0 ? 1.06 : abs === 1 ? 0.9 : 0.74;
     const rot = -off * 15;
     const op = abs > 2 ? 0 : abs === 2 ? 0.5 : 1;
+    // Layered drop shadow scaled by depth: the active phone lifts forward with
+    // a big soft shadow, side phones cast tighter ones so the row reads as 3D.
+    const ring = "inset 0 0 0 1.5px rgba(255,255,255,.12), inset 0 0 0 3px rgba(0,0,0,.38)";
+    const drop = abs === 0
+      ? "0 48px 96px rgba(10,18,34,.52), 0 20px 42px rgba(10,18,34,.40)"
+      : abs === 1
+      ? "0 30px 60px rgba(10,18,34,.34)"
+      : "0 18px 36px rgba(10,18,34,.22)";
     return {
       transform: `translate(-50%, -50%) translateX(${x}px) scale(${scale}) rotateY(${rot}deg)`,
       opacity: op,
       zIndex: 30 - abs,
       pointerEvents: abs > 2 ? "none" : "auto",
       filter: abs === 0 ? "none" : "brightness(.86) saturate(.92)",
+      boxShadow: `${drop}, ${ring}`,
     };
   };
 
@@ -3228,7 +3283,7 @@ function App() {
   const [serviceId, setServiceId] = useStateApp(parseHash);
 
   useEffect(() => {
-    const onHash = () => { setServiceId(parseHash()); window.scrollTo(0, 0); };
+    const onHash = () => { setServiceId(parseHash()); window.scrollTo({ top: 0, left: 0, behavior: "instant" }); };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
