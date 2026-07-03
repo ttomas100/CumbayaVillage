@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Panel de contenido — Cumbayá Village</title>
+  <style>
+    :root {
+      --navy: #15263f; --accent: #3f6f93; --accent-600: #33597a;
+      --paper: #f6f2ea; --card: #ffffff; --line: #e3dccf;
+      --ink: #15263f; --soft: #6b7684; --ok: #2e7d52; --err: #c0392b;
+      --radius: 14px; --shadow: 0 8px 30px rgba(21,38,63,.10);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Mulish", system-ui, -apple-system, sans-serif; background: var(--paper); color: var(--ink); }
+    h1, h2, h3 { margin: 0; }
+    button { font-family: inherit; cursor: pointer; }
+    input, textarea { font-family: inherit; }
+
+    /* Login */
+    .login { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+    .login__card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 34px 30px; width: 100%; max-width: 380px; }
+    .login__logo { height: 46px; margin: 0 auto 20px; display: block; }
+    .login h1 { font-size: 19px; text-align: center; margin-bottom: 4px; }
+    .login p.sub { text-align: center; color: var(--soft); font-size: 13.5px; margin: 0 0 22px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; color: var(--soft); }
+    .field input { width: 100%; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; font-size: 15px; background: #fff; }
+    .field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(63,111,147,.15); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 999px; padding: 12px 22px; font-weight: 700; font-size: 14.5px; background: var(--accent); color: #fff; transition: background .2s, transform .2s, opacity .2s; }
+    .btn:hover { background: var(--accent-600); }
+    .btn:disabled { opacity: .55; cursor: default; }
+    .btn--block { width: 100%; }
+    .btn--ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+    .btn--ghost:hover { background: #f0ece3; }
+    .btn--sm { padding: 7px 12px; font-size: 13px; }
+    .btn--danger { background: transparent; color: var(--err); border: 1px solid #eccfcb; }
+    .btn--danger:hover { background: #fbeeec; }
+    .msg { font-size: 13px; margin-top: 12px; text-align: center; }
+    .msg--err { color: var(--err); }
+
+    /* Shell */
+    .topbar { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+    .topbar__in { max-width: 1080px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 16px; }
+    .topbar__title { font-size: 15px; font-weight: 800; }
+    .topbar__title small { display: block; font-weight: 600; color: var(--soft); font-size: 11.5px; }
+    .topbar__spacer { flex: 1; }
+    .status { font-size: 13px; color: var(--soft); min-width: 90px; text-align: right; }
+    .status--ok { color: var(--ok); font-weight: 700; }
+    .status--err { color: var(--err); font-weight: 700; }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e0a92e; margin-right: 6px; vertical-align: middle; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 90px; }
+    .section { margin-top: 34px; }
+    .section__head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+    .section__head h2 { font-size: 20px; }
+    .section__head p { margin: 4px 0 0; color: var(--soft); font-size: 13.5px; }
+
+    /* Historias */
+    .story { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; display: grid; grid-template-columns: 96px 1fr auto; gap: 16px; margin-bottom: 14px; align-items: start; }
+    .story__avatar-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .avatar { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; background: #eee7db; border: 1px solid var(--line); display: block; }
+    .avatar--ph { display: grid; place-items: center; color: var(--soft); font-size: 11px; text-align: center; padding: 6px; }
+    .story__fields { display: flex; flex-direction: column; gap: 10px; }
+    .story__fields textarea { width: 100%; min-height: 84px; resize: vertical; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14.5px; line-height: 1.5; background: #fff; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .row2 input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 14px; background: #fff; }
+    textarea:focus, .row2 input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(63,111,147,.13); }
+    .story__actions { display: flex; flex-direction: column; gap: 6px; }
+    .iconbtn { border: 1px solid var(--line); background: #fff; border-radius: 8px; width: 34px; height: 32px; font-size: 15px; color: var(--ink); display: grid; place-items: center; }
+    .iconbtn:hover { background: #f0ece3; }
+    .iconbtn:disabled { opacity: .4; cursor: default; }
+
+    .uploadbtn { position: relative; overflow: hidden; }
+    .uploadbtn input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    /* Fotos grid */
+    .group { margin-bottom: 22px; }
+    .group h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-600); margin-bottom: 10px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; }
+    .slot { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+    .slot__img { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: #eee7db; display: block; }
+    .slot__body { padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .slot__label { font-size: 13.5px; font-weight: 700; }
+    .slot__badge { font-size: 11px; color: var(--ok); font-weight: 700; }
+    .slot__row { display: flex; gap: 6px; margin-top: auto; }
+    .savebar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; background: rgba(255,255,255,.95); backdrop-filter: blur(8px); border-top: 1px solid var(--line); }
+    .savebar__in { max-width: 1080px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; gap: 14px; justify-content: flex-end; }
+    .config-warn { background: #fff6e5; border: 1px solid #f0d9a8; color: #7a5b16; padding: 14px 16px; border-radius: 12px; font-size: 13.5px; margin: 20px auto; max-width: 640px; }
+    code { background: #efe9df; padding: 1px 5px; border-radius: 4px; font-size: .9em; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
+
+  <script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── Config / init ──────────────────────────────────────────────────────── */
+const CFG = window.FIREBASE_CONFIG || {};
+const CONFIGURED = !!(window.firebase && CFG.apiKey && CFG.projectId &&
+                      String(CFG.apiKey).indexOf("TU_") !== 0);
+if (CONFIGURED && !firebase.apps.length) firebase.initializeApp(CFG);
+
+/* ── Mapa de imágenes por defecto (espejo de index.html) ────────────────── */
+const SLOT_IMAGES = {
+  "hero-a-main": "images/hero-a-main.jpg",
+  "intro-main": "images/intro-main.jpg",
+  "svc-residencia": "images/ResidenciaPermanenteBanner3.jpg",
+  "svc-club": "images/svc-club.jpg",
+  "svc-express": "images/svc-express.jpg",
+  "svc-hotel": "images/svc-hotel.jpg",
+  "svc-silver": "images/soc7.jpg",
+  "sede-morita-main": "images/sede-morita-main.jpg",
+  "sede-morita-g0": "images/sede-morita-g0.jpg",
+  "sede-morita-g1": "images/sede-morita-g1.jpg",
+  "sede-morita-g2": "images/sede-morita-g2.jpg",
+  "sede-cumbaya-main": "images/sede-cumbaya-main.jpg",
+  "sede-cumbaya-g0": "images/sede-cumbaya-g0.jpg",
+  "sede-cumbaya-g1": "images/sede-cumbaya-g1.jpg",
+  "sede-cumbaya-g2": "images/sede-cumbaya-g2.jpg",
+  "sede-pampite-main": "images/sede-pampite-main.jpg",
+  "sede-pampite-g0": "images/sede-pampite-g0.jpg",
+  "sede-pampite-g1": "images/sede-pampite-g1.jpg",
+  "sede-pampite-g2": "images/sede-pampite-g2.jpg",
+  "sede-pillagua-main": "images/sede-pillagua-main.jpg",
+  "sede-pillagua-g0": "images/sede-pillagua-g0.jpg",
+  "sede-pillagua-g1": "images/sede-pillagua-g1.jpg",
+  "sede-pillagua-g2": "images/sede-pillagua-g2.jpg",
+  "soc1": "images/soc1.jpg", "soc2": "images/soc2.jpg", "soc3": "images/soc3.jpg",
+  "soc4": "images/soc4.jpg", "soc5": "images/soc5.jpg", "soc6": "images/soc6.jpg",
+  "soc7": "images/soc7.jpg",
+};
+
+/* Grupos con etiquetas amigables para el gestor de fotos (sin testi-*, que se
+   editan como avatares en Historias). */
+const SLOT_GROUPS = [
+  { title: "Portada e introducción", slots: [["hero-a-main", "Portada principal"], ["intro-main", "Introducción / filosofía"]] },
+  { title: "Servicios", slots: [["svc-residencia", "Residencia Permanente"], ["svc-club", "Club de Día"], ["svc-express", "Servicio Express"], ["svc-hotel", "Hotel de Paso"], ["svc-silver", "Silver Concierge"]] },
+  { title: "Sede Morita", slots: [["sede-morita-main", "Principal"], ["sede-morita-g0", "Galería 1"], ["sede-morita-g1", "Galería 2"], ["sede-morita-g2", "Galería 3"]] },
+  { title: "Sede Cumbayá", slots: [["sede-cumbaya-main", "Principal"], ["sede-cumbaya-g0", "Galería 1"], ["sede-cumbaya-g1", "Galería 2"], ["sede-cumbaya-g2", "Galería 3"]] },
+  { title: "Sede Pampite", slots: [["sede-pampite-main", "Principal"], ["sede-pampite-g0", "Galería 1"], ["sede-pampite-g1", "Galería 2"], ["sede-pampite-g2", "Galería 3"]] },
+  { title: "Sede Pillagua", slots: [["sede-pillagua-main", "Principal"], ["sede-pillagua-g0", "Galería 1"], ["sede-pillagua-g1", "Galería 2"], ["sede-pillagua-g2", "Galería 3"]] },
+  { title: "Galería social (carrusel)", slots: [["soc1", "Publicación 1"], ["soc2", "Publicación 2"], ["soc3", "Publicación 3"], ["soc4", "Publicación 4"], ["soc5", "Publicación 5"], ["soc6", "Publicación 6"], ["soc7", "Publicación 7"]] },
+];
+
+/* Historias por defecto (espejo de QUOTES en index.html) para el primer uso. */
+const DEFAULT_STORIES = [
+  { id: "s1", quote: "Lo que más me sorprendió fue ver lo feliz que estaba mi padre desde el primer día. El equipo lo trató como en casa.", name: "Amelia Barrios", rel: "Hija de residente", avatarUrl: null },
+  { id: "s2", quote: "Me costó mucho tomar la decisión. Pero al ver las instalaciones, el equipo y la calidez del lugar, supe que era el correcto. Mi abuela está como en su propio hogar.", name: "Karen Sánchez", rel: "Nieta de residente", avatarUrl: null },
+  { id: "s3", quote: "Saber que está acompañada las 24 horas por gente que de verdad la quiere nos devolvió la tranquilidad a toda la familia.", name: "Rodrigo Vélez", rel: "Hijo de residente", avatarUrl: null },
+];
+
+/* ── Utilidades ─────────────────────────────────────────────────────────── */
+const MAX_DIM = 1600;
+const ACCEPT = ["image/png", "image/jpeg", "image/webp", "image/avif"];
+
+async function toDataUrl(file, targetW) {
+  const bitmap = await createImageBitmap(file);
+  try {
+    const cap = Math.min(MAX_DIM, Math.max(1, Math.round(targetW * 2)) || MAX_DIM);
+    const scale = Math.min(1, cap / Math.max(bitmap.width, bitmap.height));
+    const w = Math.max(1, Math.round(bitmap.width * scale));
+    const h = Math.max(1, Math.round(bitmap.height * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
+    return canvas.toDataURL("image/webp", 0.85);
+  } finally { bitmap.close && bitmap.close(); }
+}
+
+function newId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+}
+
+async function uploadDataUrl(path, dataUrl) {
+  const blob = await (await fetch(dataUrl)).blob();
+  const ref = firebase.storage().ref(path);
+  await ref.put(blob, { contentType: "image/webp" });
+  return await ref.getDownloadURL();
+}
+
+/* ── Botón de subida reutilizable ───────────────────────────────────────── */
+function UploadButton({ label, targetW, onPicked }) {
+  const [busy, setBusy] = useState(false);
+  async function onChange(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    if (ACCEPT.indexOf(file.type) === -1) { alert("Formato no soportado. Usa JPG, PNG, WebP o AVIF."); return; }
+    setBusy(true);
+    try {
+      const dataUrl = await toDataUrl(file, targetW);
+      onPicked(dataUrl);
+    } catch (err) {
+      alert("No se pudo procesar la imagen: " + err.message);
+    }
+    setBusy(false);
+  }
+  return (
+    <label className="btn btn--ghost btn--sm uploadbtn">
+      {busy ? "Procesando…" : label}
+      <input type="file" accept="image/*" onChange={onChange} disabled={busy} />
+    </label>
+  );
+}
+
+/* ── Login ──────────────────────────────────────────────────────────────── */
+function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [pw, setPw] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function submit(e) {
+    e.preventDefault();
+    setErr(""); setBusy(true);
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email.trim(), pw);
+    } catch (ex) {
+      setErr("Correo o contraseña incorrectos.");
+    }
+    setBusy(false);
+  }
+  return (
+    <div className="login">
+      <form className="login__card" onSubmit={submit}>
+        <img className="login__logo" src="logo-cv.png" alt="Cumbayá Village" />
+        <h1>Panel de contenido</h1>
+        <p className="sub">Ingresa con tu correo y contraseña</p>
+        <div className="field">
+          <label>Correo</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" required />
+        </div>
+        <div className="field">
+          <label>Contraseña</label>
+          <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="current-password" required />
+        </div>
+        <button className="btn btn--block" type="submit" disabled={busy}>{busy ? "Entrando…" : "Entrar"}</button>
+        {err ? <div className="msg msg--err">{err}</div> : null}
+      </form>
+    </div>
+  );
+}
+
+/* ── Fila de historia ───────────────────────────────────────────────────── */
+function StoryRow({ story, index, total, onChange, onMove, onDelete }) {
+  const set = (k, v) => onChange({ ...story, [k]: v });
+  const hasAvatar = story.avatarUrl && story.avatarUrl !== "";
+  return (
+    <div className="story">
+      <div className="story__avatar-col">
+        {hasAvatar
+          ? <img className="avatar" src={story.avatarUrl} alt="" />
+          : <div className="avatar avatar--ph">Sin foto</div>}
+        <UploadButton label="Foto" targetW={96} onPicked={(d) => set("avatarUrl", d)} />
+        {hasAvatar ? <button className="btn btn--sm btn--ghost" onClick={() => set("avatarUrl", null)}>Quitar</button> : null}
+      </div>
+      <div className="story__fields">
+        <textarea placeholder="Escribe la historia o testimonio…" value={story.quote || ""} onChange={(e) => set("quote", e.target.value)} />
+        <div className="row2">
+          <input placeholder="Nombre (ej. Amelia Barrios)" value={story.name || ""} onChange={(e) => set("name", e.target.value)} />
+          <input placeholder="Relación (ej. Hija de residente)" value={story.rel || ""} onChange={(e) => set("rel", e.target.value)} />
+        </div>
+      </div>
+      <div className="story__actions">
+        <button className="iconbtn" title="Subir" onClick={() => onMove(index, -1)} disabled={index === 0}>↑</button>
+        <button className="iconbtn" title="Bajar" onClick={() => onMove(index, 1)} disabled={index === total - 1}>↓</button>
+        <button className="iconbtn" title="Eliminar" onClick={() => onDelete(index)} style={{ color: "var(--err)" }}>✕</button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Tarjeta de foto (slot) ─────────────────────────────────────────────── */
+function SlotCard({ slotId, label, override, onSet, onReset }) {
+  const current = override || SLOT_IMAGES[slotId];
+  const isOverridden = !!override;
+  return (
+    <div className="slot">
+      <img className="slot__img" src={current} alt="" />
+      <div className="slot__body">
+        <div className="slot__label">{label}</div>
+        {isOverridden ? <div className="slot__badge">● Cambiada</div> : null}
+        <div className="slot__row">
+          <UploadButton label="Cambiar" targetW={1200} onPicked={onSet} />
+          {isOverridden ? <button className="btn btn--sm btn--danger" onClick={onReset}>Restablecer</button> : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Dashboard ──────────────────────────────────────────────────────────── */
+function Dashboard({ user }) {
+  const [stories, setStories] = useState(null);   // null = cargando
+  const [images, setImages] = useState({});
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState({ text: "", kind: "" });
+
+  useEffect(() => {
+    firebase.firestore().doc("site/public").get()
+      .then((snap) => {
+        const d = snap.exists ? snap.data() : {};
+        setStories(Array.isArray(d.stories) && d.stories.length ? d.stories : DEFAULT_STORIES);
+        setImages(d.images || {});
+      })
+      .catch(() => { setStories(DEFAULT_STORIES); });
+  }, []);
+
+  function markDirty() { setDirty(true); setStatus({ text: "", kind: "" }); }
+
+  function updateStory(i, next) { setStories((arr) => arr.map((s, k) => (k === i ? next : s))); markDirty(); }
+  function moveStory(i, dir) {
+    setStories((arr) => {
+      const j = i + dir;
+      if (j < 0 || j >= arr.length) return arr;
+      const copy = arr.slice();
+      const tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+      return copy;
+    });
+    markDirty();
+  }
+  function deleteStory(i) {
+    if (!confirm("¿Eliminar esta historia?")) return;
+    setStories((arr) => arr.filter((_, k) => k !== i)); markDirty();
+  }
+  function addStory() {
+    setStories((arr) => arr.concat([{ id: newId(), quote: "", name: "", rel: "", avatarUrl: null }])); markDirty();
+  }
+  function setImage(slotId, dataUrl) { setImages((m) => ({ ...m, [slotId]: dataUrl })); markDirty(); }
+  function resetImage(slotId) { setImages((m) => { const n = { ...m }; delete n[slotId]; return n; }); markDirty(); }
+
+  async function save() {
+    setSaving(true); setStatus({ text: "Guardando…", kind: "" });
+    try {
+      // Subir avatares pendientes (dataURL → Storage)
+      const outStories = [];
+      for (const s of stories) {
+        let avatarUrl = s.avatarUrl || null;
+        if (avatarUrl && avatarUrl.indexOf("data:") === 0) {
+          avatarUrl = await uploadDataUrl("site/avatars/" + s.id + ".webp", avatarUrl);
+        }
+        outStories.push({ id: s.id, quote: s.quote || "", name: s.name || "", rel: s.rel || "", avatarUrl: avatarUrl });
+      }
+      // Subir imágenes pendientes
+      const outImages = {};
+      for (const slotId of Object.keys(images)) {
+        let url = images[slotId];
+        if (!url) continue;
+        if (url.indexOf("data:") === 0) url = await uploadDataUrl("site/images/" + slotId + ".webp", url);
+        outImages[slotId] = url;
+      }
+      await firebase.firestore().doc("site/public").set({ stories: outStories, images: outImages });
+      setStories(outStories); setImages(outImages);
+      setDirty(false); setStatus({ text: "Guardado ✓", kind: "ok" });
+    } catch (ex) {
+      setStatus({ text: "Error al guardar", kind: "err" });
+      alert("No se pudo guardar: " + (ex && ex.message ? ex.message : ex));
+    }
+    setSaving(false);
+  }
+
+  return (
+    <div>
+      <div className="topbar">
+        <div className="topbar__in">
+          <div className="topbar__title">Panel de contenido<small>Cumbayá Village · {user.email}</small></div>
+          <div className="topbar__spacer"></div>
+          <div className={"status " + (status.kind === "ok" ? "status--ok" : status.kind === "err" ? "status--err" : "")}>
+            {dirty && !status.text ? <span><span className="dot"></span>Sin guardar</span> : status.text}
+          </div>
+          <button className="btn btn--ghost btn--sm" onClick={() => firebase.auth().signOut()}>Cerrar sesión</button>
+        </div>
+      </div>
+
+      <div className="wrap">
+        <section className="section">
+          <div className="section__head">
+            <div>
+              <h2>Historias</h2>
+              <p>"Historias que nos recuerdan por qué lo hacemos" — se muestran en la página principal.</p>
+            </div>
+            <button className="btn btn--sm" onClick={addStory}>+ Añadir historia</button>
+          </div>
+          {stories === null
+            ? <p style={{ color: "var(--soft)" }}>Cargando…</p>
+            : stories.map((s, i) => (
+                <StoryRow key={s.id} story={s} index={i} total={stories.length}
+                  onChange={(next) => updateStory(i, next)} onMove={moveStory} onDelete={deleteStory} />
+              ))}
+          {stories && stories.length === 0 ? <p style={{ color: "var(--soft)" }}>No hay historias. Añade la primera.</p> : null}
+        </section>
+
+        <section className="section">
+          <div className="section__head">
+            <div>
+              <h2>Fotos del sitio</h2>
+              <p>Reemplaza cualquier foto. Se optimiza automáticamente al subirla.</p>
+            </div>
+          </div>
+          {SLOT_GROUPS.map((g) => (
+            <div className="group" key={g.title}>
+              <h3>{g.title}</h3>
+              <div className="grid">
+                {g.slots.map(([slotId, label]) => (
+                  <SlotCard key={slotId} slotId={slotId} label={label}
+                    override={images[slotId]} onSet={(d) => setImage(slotId, d)} onReset={() => resetImage(slotId)} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+      </div>
+
+      <div className="savebar">
+        <div className="savebar__in">
+          {dirty ? <span style={{ color: "var(--soft)", fontSize: 13 }}>Tienes cambios sin publicar</span> : null}
+          <button className="btn" onClick={save} disabled={!dirty || saving}>{saving ? "Guardando…" : "Guardar y publicar"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Gate de autenticación ──────────────────────────────────────────────── */
+function AdminApp() {
+  const [user, setUser] = useState(undefined); // undefined = comprobando
+
+  useEffect(() => {
+    if (!CONFIGURED) return;
+    return firebase.auth().onAuthStateChanged((u) => setUser(u || null));
+  }, []);
+
+  if (!CONFIGURED) {
+    return (
+      <div className="login">
+        <div className="config-warn">
+          <strong>Firebase aún no está configurado.</strong><br />
+          Edita el archivo <code>firebase-config.js</code> con los datos de tu proyecto
+          (Consola de Firebase → Configuración del proyecto → Tus apps) y vuelve a cargar esta página.
+        </div>
+      </div>
+    );
+  }
+  if (user === undefined) return <div className="login"><p style={{ color: "var(--soft)" }}>Cargando…</p></div>;
+  if (!user) return <LoginForm />;
+  return <Dashboard user={user} />;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<AdminApp />);
+  </script>
+</body>
+</html>

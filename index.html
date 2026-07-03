@@ -728,6 +728,42 @@ body { padding-top: var(--nav-h); }
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 
+  <!-- Firebase (compat) — la web pública SOLO lee contenido (Firestore) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script>
+  /* CMS: lee el documento site/public de Firestore y lo expone en window.CMS.
+     La web fusiona esto sobre los defaults hardcodeados; si algo falla o
+     Firebase aún no está configurado, usa los defaults (nunca se rompe). */
+  window.CMS = { images: {}, stories: null, ready: false, _subs: new Set() };
+  window.CMS.subscribe = function (fn) {
+    window.CMS._subs.add(fn);
+    return function () { window.CMS._subs.delete(fn); };
+  };
+  (function () {
+    function done() {
+      window.CMS.ready = true;
+      window.CMS._subs.forEach(function (fn) { try { fn(); } catch (e) {} });
+    }
+    var cfg = window.FIREBASE_CONFIG || {};
+    var configured = window.firebase && cfg.apiKey && cfg.projectId &&
+                     String(cfg.apiKey).indexOf("TU_") !== 0;
+    if (!configured) { done(); return; }   // sin configurar → defaults
+    try {
+      firebase.initializeApp(cfg);
+      window.CMS._fetch = firebase.firestore().doc("site/public").get()
+        .then(function (snap) {
+          var d = snap.exists ? snap.data() : {};
+          window.CMS.images = d.images || {};
+          window.CMS.stories = Array.isArray(d.stories) ? d.stories : null;
+        })
+        .catch(function () { /* offline / permisos → defaults */ })
+        .finally(done);
+    } catch (e) { done(); }
+  })();
+  </script>
+
   <!-- Image slot web component (vanilla, inlined) -->
   <script>
 // @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
@@ -2039,7 +2075,7 @@ const SLOT_IMAGES = {
 };
 
 function Slot({ id, tag, radius = 16, shape = "rounded", className = "", style = {}, placeholder, src, position }) {
-  const resolvedSrc = src || (id && SLOT_IMAGES[id]) || undefined;
+  const resolvedSrc = src || (id && ((window.CMS && window.CMS.images[id]) || SLOT_IMAGES[id])) || undefined;
   return (
     <div className={`slot-wrap ${className}`} style={{ position: "relative", ...style }}>
       {React.createElement("image-slot", {
@@ -2828,18 +2864,22 @@ const QUOTES = [
 ];
 
 function Testimonials() {
+  const remote = (window.CMS && window.CMS.stories) || null;
+  const items = remote
+    ? remote.map((s) => ({ q: s.quote, name: s.name, rel: s.rel, avatarUrl: s.avatarUrl }))
+    : QUOTES;
   return (
     <section className="section testi" id="familias">
       <div className="wrap">
         <SectionHead kicker="Familias que confían en nosotros"
           title={<>Historias que nos recuerdan por qué lo hacemos</>} max={640} />
         <div className="testi__grid">
-          {QUOTES.map((t, i) => (
+          {items.map((t, i) => (
             <Reveal key={i} delay={i * 110} className="testi__card card">
               <div className="testi__mark" aria-hidden="true">”</div>
               <p className="testi__q">{t.q}</p>
               <div className="testi__by">
-                <div className="testi__avatar"><Slot id={`testi-${i}`} shape="circle" radius={999} style={{ width: 48, height: 48 }} placeholder="" /></div>
+                <div className="testi__avatar"><Slot id={`testi-${i}`} shape="circle" radius={999} style={{ width: 48, height: 48 }} placeholder="" src={t.avatarUrl || undefined} /></div>
                 <div>
                   <div className="testi__name">{t.name}</div>
                   <div className="testi__rel">{t.rel}</div>
@@ -3304,6 +3344,13 @@ const SURFACES = {
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const [serviceId, setServiceId] = useStateApp(parseHash);
+
+  // Re-render una vez cuando el contenido remoto (Firestore) termina de cargar.
+  const [, bumpCms] = React.useState(0);
+  useEffect(() => {
+    if (!window.CMS) return;
+    return window.CMS.subscribe(() => bumpCms((n) => n + 1));
+  }, []);
 
   useEffect(() => {
     const onHash = () => { setServiceId(parseHash()); window.scrollTo({ top: 0, left: 0, behavior: "instant" }); };
