@@ -265,10 +265,11 @@ p, .lead { text-align: justify; text-align-last: left; hyphens: auto; }
 /* ---------- HERO A : editorial / asymmetric ---------- */
 .hero-a { padding-top: clamp(48px, 7vw, 96px); padding-bottom: clamp(48px, 7vw, 110px); overflow: hidden; }
 .hero-a__bgword {
-  position: absolute; right: -2vw; top: 2vw; z-index: -1;
-  font-family: var(--serif); font-style: italic; font-weight: 300;
-  font-size: 28vw; color: #000; opacity: .026; line-height: .8; pointer-events: none; user-select: none;
+  position: absolute; right: -4vw; top: 2vw; z-index: -1;
+  width: min(640px, 52vw); height: auto; max-width: none;
+  opacity: .05; pointer-events: none; user-select: none;
 }
+@media (max-width: 720px) { .hero-a__bgword { width: 74vw; right: -14vw; top: 0; opacity: .04; } }
 .hero-a__grid {
   display: grid; grid-template-columns: 1.05fr .95fr; gap: clamp(32px, 5vw, 80px);
   align-items: center;
@@ -379,14 +380,14 @@ body { padding-top: var(--nav-h); }
 /* Floating WhatsApp */
 .fab-wa {
   position: fixed; right: 22px; bottom: 22px; z-index: 90;
-  display: inline-flex; align-items: center; gap: 10px;
-  background: #25D366; color: #fff; padding: 14px 20px 14px 16px;
-  border-radius: 999px; box-shadow: var(--shadow-lg); font-weight: 700; font-size: 15px;
+  display: grid; place-items: center;
+  width: 60px; height: 60px; padding: 0;
+  background: rgba(37,211,102,.85); color: #fff;
+  border-radius: 50%; box-shadow: var(--shadow-lg);
   transition: transform .3s var(--ease), background .25s;
 }
-.fab-wa:hover { transform: translateY(-3px); background: #1fb855; }
-.fab-wa__label { white-space: nowrap; }
-@media (max-width: 560px) { .fab-wa__label { display: none; } .fab-wa { padding: 15px; } }
+.fab-wa:hover { transform: translateY(-3px) scale(1.05); background: #1fb855; }
+@media (max-width: 560px) { .fab-wa { width: 56px; height: 56px; right: 16px; bottom: 16px; } }
 
 /* ============================================================
    Section heads / pills
@@ -565,10 +566,11 @@ body { padding-top: var(--nav-h); }
    ============================================================ */
 .footer { background: #0f1c30; color: var(--on-dark); padding-top: clamp(56px, 7vw, 88px); }
 .footer__grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 40px; padding-bottom: 48px; }
-.footer__social { display: flex; gap: 12px; margin-top: 24px; }
-.footer__soc { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: none; box-shadow: 0 3px 10px rgba(0,0,0,.22); transition: transform .25s var(--ease), box-shadow .25s var(--ease); }
-.footer__soc:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,.32); }
-.footer__soc svg { display: block; }
+.footer__social { display: flex; gap: 10px; margin-top: 24px; }
+.footer__soc { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 1px solid transparent; box-shadow: none; transition: transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease); }
+.footer__soc:hover { transform: translateY(-3px); background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.18); }
+.footer__soc svg { display: block; opacity: .82; transition: opacity .25s var(--ease); }
+.footer__soc:hover svg { opacity: 1; }
 .footer__col h5 { font-family: var(--sans); font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #fff; margin: 0 0 18px; }
 .footer__col a { display: flex; align-items: center; gap: 9px; color: var(--on-dark-soft); font-size: 15px; padding: 7px 0; transition: color .2s; }
 .footer__col a:hover { color: #fff; }
@@ -597,23 +599,17 @@ body { padding-top: var(--nav-h); }
 .social .wrap { position: relative; z-index: 2; }
 
 /* network pills */
-.social__nets { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 38px; }
+.social__nets { display: flex; justify-content: center; align-items: center; gap: clamp(16px, 3vw, 26px); flex-wrap: wrap; margin-top: 38px; }
 .social__net {
-  display: flex; align-items: center; gap: 13px;
-  padding: 11px 20px 11px 13px; border-radius: 999px;
+  position: relative;
+  width: 66px; height: 66px; border-radius: 50%;
+  display: grid; place-items: center;
   background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow-sm);
   transition: transform .4s var(--ease), box-shadow .4s var(--ease), border-color .4s;
 }
-.social__net-badge { width: 44px; height: 44px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--paper); box-shadow: inset 0 0 0 1px var(--line-soft); animation: badgeBob 4.5s var(--ease) infinite; }
-.social__net:nth-child(2) .social__net-badge { animation-delay: .6s; }
-.social__net:nth-child(3) .social__net-badge { animation-delay: 1.2s; }
-@keyframes badgeBob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-5px);} }
-.social__net-meta { display: flex; flex-direction: column; line-height: 1.15; }
-.social__net-name { font-weight: 800; font-size: 15px; color: var(--ink); }
-.social__net-handle { font-size: 12.5px; color: var(--text-soft); }
-.social__net:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: color-mix(in srgb, var(--ring) 50%, var(--line)); }
-.social__net.is-active { border-color: var(--ring); box-shadow: 0 8px 24px color-mix(in srgb, var(--ring) 26%, transparent); }
-.social__net.is-active .social__net-badge { box-shadow: 0 0 0 2px var(--ring); }
+.social__net-badge { display: grid; place-items: center; }
+.social__net:hover { transform: translateY(-5px); box-shadow: 0 14px 30px color-mix(in srgb, var(--ring) 24%, rgba(0,0,0,.14)); border-color: color-mix(in srgb, var(--ring) 55%, var(--line)); }
+.social__net.is-active { border-color: var(--ring); box-shadow: 0 0 0 2px color-mix(in srgb, var(--ring) 55%, transparent), 0 12px 28px color-mix(in srgb, var(--ring) 28%, transparent); }
 
 /* coverflow stage */
 .social__stage-wrap { position: relative; z-index: 2; }
@@ -641,21 +637,6 @@ body { padding-top: var(--nav-h); }
 }
 .phone__screen::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(8,14,24,.72)); pointer-events: none; z-index: 2; }
 
-/* arrows */
-.social__arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 40;
-  width: 54px; height: 54px; border-radius: 50%; cursor: pointer;
-  background: var(--card); border: 1px solid var(--line); color: var(--ink);
-  display: grid; place-items: center; box-shadow: var(--shadow);
-  transition: transform .3s var(--ease), background .25s, color .25s;
-}
-.social__arrow:hover { background: var(--ink); color: #fff; }
-.social__arrow--prev { left: clamp(8px, 4vw, 60px); }
-.social__arrow--prev svg { transform: rotate(180deg); }
-.social__arrow--next { right: clamp(8px, 4vw, 60px); }
-.social__arrow--prev:hover { transform: translateY(-50%) scale(1.08); }
-.social__arrow--next:hover { transform: translateY(-50%) scale(1.08); }
-
 /* dots */
 .social__dots-wrap { position: relative; z-index: 2; }
 .social__dots { display: flex; justify-content: center; gap: 10px; margin-top: 34px; }
@@ -665,12 +646,11 @@ body { padding-top: var(--nav-h); }
 
 @media (max-width: 720px) {
   .social__stage { transform: scale(.82); transform-origin: center top; height: clamp(420px, 110vw, 520px); }
-  .social__net { padding: 9px 16px 9px 11px; gap: 10px; }
-  .social__net-badge { width: 40px; height: 40px; }
+  .social__net { width: 58px; height: 58px; }
 }
 @media (max-width: 460px) {
-  .social__net-meta { display: none; }
-  .social__net { padding: 10px; }
+  .social__nets { gap: 16px; }
+  .social__net { width: 54px; height: 54px; }
 }
 
 /* Motion toggle (Tweaks) */
@@ -695,6 +675,28 @@ body { padding-top: var(--nav-h); }
 @media (max-width: 720px) {
   .svc-detail-hero__media { aspect-ratio: 16/10; }
 }
+/* watermark + scroll cue */
+.svc-detail-hero { position: relative; overflow: hidden; }
+.svc-detail-hero > .wrap { position: relative; z-index: 1; }
+.svc-detail-hero__wm {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: min(940px, 86%); height: auto; max-width: none;
+  opacity: .05; pointer-events: none; user-select: none; z-index: 0;
+}
+@media (max-width: 720px) { .svc-detail-hero__wm { width: 118%; opacity: .045; } }
+.svc-scroll-cue {
+  display: flex; flex-direction: column; align-items: center; gap: 9px;
+  width: fit-content; margin: clamp(38px, 5vw, 60px) auto 0;
+  color: var(--text-soft); font-size: 11.5px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase;
+}
+.svc-scroll-cue__chev {
+  display: grid; place-items: center; color: var(--accent-600);
+  animation: scrollBounce 1.9s var(--ease) infinite;
+}
+.svc-scroll-cue__chev svg { transform: rotate(90deg); }
+@keyframes scrollBounce { 0%,100% { transform: translateY(0); opacity: .5; } 50% { transform: translateY(7px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .svc-scroll-cue__chev { animation: none; } }
 
 /* Silver Concierge */
 .silver { position: relative; overflow: hidden; }
@@ -2209,7 +2211,7 @@ function HeroA() {
   const pRef = useParallax(0.14);
   return (
     <section className="hero hero-a" id="inicio">
-      <span className="hero-a__bgword" aria-hidden="true">Hogar</span>
+      <img className="hero-a__bgword" src="logo-cv.png" alt="" aria-hidden="true" />
       <div className="wrap hero-a__grid">
         <div className="hero-a__copy">
           <Reveal className="eyebrow-row" delay={60}>
@@ -2404,9 +2406,8 @@ function Nav() {
 /* Floating WhatsApp pill (replaces old chat widget) */
 function FloatingWA() {
   return (
-    <a className="fab-wa" href={WA} target="_blank" rel="noopener" aria-label="WhatsApp">
-      <Ic name="whatsapp" size={26} />
-      <span className="fab-wa__label">¿Conversamos?</span>
+    <a className="fab-wa" href={WA} target="_blank" rel="noopener" aria-label="Conversemos por WhatsApp" title="¿Conversamos?">
+      <Ic name="whatsapp" size={28} />
     </a>
   );
 }
@@ -2643,6 +2644,7 @@ function ServiceDetailMain({ id }) {
   return (
     <main>
       <section className="section svc-detail-hero">
+        <img className="svc-detail-hero__wm" src="logo-cv.png" alt="" aria-hidden="true" />
         <div className="wrap">
           <a className="svc-detail-back" href="#servicios"><Ic name="arrow" size={16} className="svc-detail-back__ic" /> Volver a servicios</a>
           <div className="svc-detail-hero__grid">
@@ -2658,6 +2660,10 @@ function ServiceDetailMain({ id }) {
               <Slot id={d.slot} radius={20} style={{ height: "100%" }} placeholder={d.name} />
             </Reveal>
           </div>
+          <Reveal fade delay={320} className="svc-scroll-cue">
+            <span>Descubre más</span>
+            <span className="svc-scroll-cue__chev"><Ic name="arrow" size={20} /></span>
+          </Reveal>
         </div>
       </section>
 
@@ -2896,7 +2902,7 @@ function Footer() {
               const Badge = net.Badge;
               return (
                 <a key={key} href={net.href} target="_blank" rel="noopener" className="footer__soc" aria-label={net.name}>
-                  <Badge size={22} />
+                  <Badge size={24} mono />
                 </a>
               );
             })}
@@ -3061,8 +3067,11 @@ const { useState: useStateS, useEffect: useEffectS, useRef: useRefS } = React;
 /* ============================================================
    Brand social badges (TikTok / Instagram / Facebook)
    ============================================================ */
-function TikTokBadge({ size = 30 }) {
+function TikTokBadge({ size = 30, mono = false }) {
   const note = "M21 8.2a7 7 0 0 1-4.1-1.3v6.9a5.6 5.6 0 1 1-5.6-5.6c.3 0 .6 0 .9.07v2.9a2.7 2.7 0 1 0 1.9 2.6V2.5h2.8a4.2 4.2 0 0 0 4.1 3.9z";
+  if (mono) return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d={note} fill="#fff" /></svg>
+  );
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <path d={note} fill="#25F4EE" transform="translate(-1.1 1)" />
@@ -3071,7 +3080,14 @@ function TikTokBadge({ size = 30 }) {
     </svg>
   );
 }
-function InstagramBadge({ size = 30 }) {
+function InstagramBadge({ size = 30, mono = false }) {
+  if (mono) return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <rect x="3" y="3" width="18" height="18" rx="5.2" fill="none" stroke="#fff" strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="3.6" fill="none" stroke="#fff" strokeWidth="1.8" />
+      <circle cx="16.7" cy="7.3" r="1.2" fill="#fff" />
+    </svg>
+  );
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="none">
       <defs>
@@ -3091,7 +3107,12 @@ function InstagramBadge({ size = 30 }) {
     </svg>
   );
 }
-function FacebookBadge({ size = 30 }) {
+function FacebookBadge({ size = 30, mono = false }) {
+  if (mono) return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M13.6 21v-7.9h2.6l.4-3h-3V8.2c0-.87.24-1.46 1.5-1.46H17V4.06c-.28-.04-1.24-.12-2.36-.12-2.33 0-3.93 1.42-3.93 4.04v2.25H8.1v3h2.6V21h2.9z" fill="#fff" />
+    </svg>
+  );
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <circle cx="12" cy="12" r="10" fill="#1877F2" />
@@ -3099,7 +3120,13 @@ function FacebookBadge({ size = 30 }) {
     </svg>
   );
 }
-function YouTubeBadge({ size = 30 }) {
+function YouTubeBadge({ size = 30, mono = false }) {
+  if (mono) return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="2.3" y="5.4" width="19.4" height="13.2" rx="4" fill="none" stroke="#fff" strokeWidth="1.8" />
+      <path d="M10.3 9.1v5.8L15.3 12z" fill="#fff" />
+    </svg>
+  );
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <rect x="1.5" y="5" width="21" height="14" rx="4.2" fill="#FF0000" />
@@ -3142,6 +3169,13 @@ function SocialCarousel() {
   }, [paused, n]);
 
   const go = (d) => setActive((a) => (a + d + n) % n);
+  // step one position toward a clicked card so the carousel advances one by one
+  const stepTo = (i) => {
+    let off = i - active;
+    if (off > n / 2) off -= n;
+    if (off < -n / 2) off += n;
+    if (off !== 0) go(off > 0 ? 1 : -1);
+  };
   const activeNet = POSTS[active].net;
 
   const cardStyle = (i) => {
@@ -3188,15 +3222,12 @@ function SocialCarousel() {
               <a key={key} href={net.href} target="_blank" rel="noopener"
                  className={`social__net ${isActive ? "is-active" : ""}`}
                  style={{ "--ring": net.ring }}
+                 aria-label={net.name}
                  onMouseEnter={() => {
                    const idx = POSTS.findIndex((p) => p.net === key);
                    if (idx >= 0) setActive(idx);
                  }}>
-                <span className="social__net-badge"><Badge size={30} /></span>
-                <span className="social__net-meta">
-                  <span className="social__net-name">{net.name}</span>
-                  <span className="social__net-handle">{net.handle}</span>
-                </span>
+                <span className="social__net-badge"><Badge size={34} /></span>
               </a>
             );
           })}
@@ -3214,7 +3245,7 @@ function SocialCarousel() {
             const net = NET[p.net];
             const Badge = net.Badge;
             return (
-              <div key={p.id} className="phone" style={cardStyle(i)} onClick={() => setActive(i)}>
+              <div key={p.id} className="phone" style={cardStyle(i)} onClick={() => stepTo(i)}>
                 <div className="phone__notch"></div>
                 <div className="phone__screen">
                   <Slot id={p.id} radius={26} placeholder={`${net.name} — ${p.tag}`} style={{ height: "100%" }} />
@@ -3224,9 +3255,6 @@ function SocialCarousel() {
               </div>
             );
           })}
-
-          <button className="social__arrow social__arrow--prev" onClick={() => go(-1)} aria-label="Anterior"><Ic name="arrow" size={20} /></button>
-          <button className="social__arrow social__arrow--next" onClick={() => go(1)} aria-label="Siguiente"><Ic name="arrow" size={20} /></button>
         </div>
       </Reveal>
 
