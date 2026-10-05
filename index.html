@@ -3320,6 +3320,20 @@ function parseHash() {
   return m && SERVICE_DETAILS[m[1]] ? m[1] : null;
 }
 
+// Scroll a una sección por id, descontando la altura del nav fijo. Instantáneo
+// a propósito: el scroll suave se cancela al competir con la navegación de
+// fragmento del navegador. Devuelve la posición objetivo, o -1 si la sección
+// aún no está montada.
+function scrollToAnchor(anchor) {
+  const el = anchor && document.getElementById(anchor);
+  if (!el) return -1;
+  const nav = document.querySelector(".nav");
+  const navH = nav ? nav.offsetHeight : 0;
+  const target = Math.max(0, (el.getBoundingClientRect().top + window.scrollY - navH) | 0);
+  window.scrollTo({ top: target, left: 0, behavior: "instant" });
+  return target;
+}
+
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "hero": "editorial",
   "accent": "#3f6f93",
@@ -3352,11 +3366,47 @@ function App() {
     return window.CMS.subscribe(() => bumpCms((n) => n + 1));
   }, []);
 
+  const pendingAnchor = React.useRef(null);
   useEffect(() => {
-    const onHash = () => { setServiceId(parseHash()); window.scrollTo({ top: 0, left: 0, behavior: "instant" }); };
+    const onHash = () => {
+      const id = parseHash();
+      const hash = window.location.hash || "";
+      // Ruta de detalle / #top / vacío → ir al inicio.
+      if (id || !hash || hash === "#top" || hash.indexOf("#/") === 0) {
+        pendingAnchor.current = null;
+        setServiceId(id);
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        return;
+      }
+      // Ancla interna (#servicios, #familias, …).
+      const anchor = hash.slice(1);
+      if (scrollToAnchor(anchor) < 0) {
+        // La sección aún no está montada → venimos de una página de detalle.
+        pendingAnchor.current = anchor;
+        setServiceId(id); // id = null → volver a home
+      }
+    };
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+
+  // Al volver a home, hacer scroll al ancla pendiente. Reintenta ~600ms porque
+  // la sección/layout puede no estar lista en el primer frame tras montar.
+  useEffect(() => {
+    if (serviceId || !pendingAnchor.current) return;
+    const anchor = pendingAnchor.current;
+    pendingAnchor.current = null;
+    let n = 0, last = -1;
+    const tick = () => {
+      const target = scrollToAnchor(anchor);
+      // Detenerse solo cuando el objetivo se estabiliza (el layout del home,
+      // con imágenes/secciones, puede seguir creciendo los primeros frames).
+      if (target >= 0 && target === last && Math.abs((window.scrollY | 0) - target) <= 2) return;
+      last = target;
+      if (++n < 24) setTimeout(tick, 50);
+    };
+    setTimeout(tick, 0);
+  }, [serviceId]);
 
   useEffect(() => {
     const r = document.documentElement.style;
