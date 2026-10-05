@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 #
-# release.sh — promueve el trabajo de `main` a `production`.
-# GitHub Pages publica el branch `production`, así que la web solo
-# se actualiza cuando ejecutas este script.
+# release.sh — promueve el trabajo de `development` a `main`.
+# GitHub Pages publica el branch `main`, así que la web se actualiza
+# cuando ejecutas este script (o con cualquier push directo a `main`).
 #
 # Uso:  ./release.sh
 #
 set -euo pipefail
 
-DEV_BRANCH="main"
-PROD_BRANCH="production"
+DEV_BRANCH="development"
+PROD_BRANCH="main"
 
 # 1. Asegurar árbol limpio
 if [[ -n "$(git status --porcelain)" ]]; then
