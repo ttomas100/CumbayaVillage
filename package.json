@@ -1,0 +1,11 @@
+{
+  "name": "cumbaya-village-site",
+  "private": true,
+  "description": "Static site. `npm run build` pre-compiles the in-browser Babel scripts into _site/ for GitHub Pages.",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "@babel/standalone": "7.29.0"
+  }
+}

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 #
 # release.sh — promueve el trabajo de `development` a `main`.
-# GitHub Pages publica el branch `main`, así que la web se actualiza
-# cuando ejecutas este script (o con cualquier push directo a `main`).
+# GitHub Pages publica el branch `main` (vía GitHub Actions, ver
+# .github/workflows/pages.yml), así que la web se actualiza cuando
+# ejecutas este script (o con cualquier push directo a `main`).
 #
 # Uso:  ./release.sh
 #
@@ -30,4 +31,4 @@ echo "→ Publicando a producción (push $PROD_BRANCH)…"
 git push origin "$PROD_BRANCH"
 
 git checkout "$DEV_BRANCH"
-echo "✅ Producción actualizada. GitHub Pages se reconstruirá en ~1 min."
+echo "✅ Producción actualizada. GitHub Actions compilará y publicará la web en ~1-2 min."
